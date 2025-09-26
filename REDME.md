@@ -1,0 +1,1 @@
+This a tauri2 program for myself to study.

@@ -1,19 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import favorite from '@/views/favorite.vue'
-import playback from '@/views/playback.vue'
-import store from '@/views/store.vue'
+import PlayBack from '@/views/playBack.vue'
+import StorePage from '@/views/storePage.vue'
+import LoadPage from '@/views/loadPage.vue'
+
+
+const routes = [
+  { path: '/storePage', component: StorePage, name: 'store' },
+  { path: '/favorite', component: favorite, name: 'favorite' },
+  { path: '/playBack', component: PlayBack, name: 'playback' },
+  { path: '/loadPage', component: LoadPage, name: 'loadPage' },
+  { path: '/', redirect: '/storePage' },
+]
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {path:'/favorite',component:favorite,name:'favorite'},
-    {path:'/playback',component:playback,name:'playback'},
-    {path:'/store',component:store,name:'store'},
-    {path:'/',redirect:'/store'}
-  ]
+  history: createWebHistory(),
+  routes,
 })
 
 
 
 export default router
-

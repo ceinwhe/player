@@ -1,20 +1,36 @@
 <template>
   <main class="main">
-    <navigate></navigate>
+    <nav-page></nav-page>
     <div class="content">
-      <top></top>
+      <top-page/>
       <div class="view">
         <router-view class="router-view" />
-        <playerBar></playerBar>
+        <playerBar v-if="showPlayBar"/>
       </div>
     </div>
   </main>
 </template>
 
 <script setup lang="ts">
-import Navigate from '@/components/navigate.vue'
-import Top from '@/components/top.vue'
+import NavPage from '@/components/navPage.vue'
+import TopPage from '@/components/topPage.vue'
 import PlayerBar from '@/components/playerBar.vue'
+import { computed, onMounted } from 'vue'
+import { invoke } from '@tauri-apps/api/core'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const showPlayBar = computed(()=>(
+  router.currentRoute.value.path != '/loadPage'
+))
+
+onMounted(async () => {
+  if (await invoke('check_songs')) {
+    await router.push('/storePage')
+  } else {
+    await router.push('/loadPage')
+  }
+})
 </script>
 
 <style scoped>

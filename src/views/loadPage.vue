@@ -1,0 +1,73 @@
+<template>
+  <div class="loader">
+    <p class="text">还没有歌曲呢,选择存储音乐的文件夹吧（＝。＝）</p>
+    <button class="btn" @click="selectFolder">
+      <svg class="icon" viewBox="0 0 1024 1024" width="20" height="20">
+        <path
+          d="M855.04 385.024q19.456 2.048 38.912 10.24t33.792 23.04 21.504 37.376 2.048 54.272q-2.048 8.192-8.192 40.448t-14.336 74.24-18.432 86.528-19.456 76.288q-5.12 18.432-14.848 37.888t-25.088 35.328-36.864 26.112-51.2 10.24l-567.296 0q-21.504 0-44.544-9.216t-42.496-26.112-31.744-40.96-12.288-53.76l0-439.296q0-62.464 33.792-97.792t95.232-35.328l503.808 0q22.528 0 46.592 8.704t43.52 24.064 31.744 35.84 12.288 44.032l0 11.264-53.248 0q-40.96 0-95.744-0.512t-116.736-0.512-115.712-0.512-92.672-0.512l-47.104 0q-26.624 0-41.472 16.896t-23.04 44.544q-8.192 29.696-18.432 62.976t-18.432 61.952q-10.24 33.792-20.48 65.536-2.048 8.192-2.048 13.312 0 17.408 11.776 29.184t29.184 11.776q31.744 0 43.008-39.936l54.272-198.656q133.12 1.024 243.712 1.024l286.72 0z"
+        ></path>
+      </svg>
+      选择文件夹
+    </button>
+    <button @click="test">test</button>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { open } from '@tauri-apps/plugin-dialog'
+import { invoke } from '@tauri-apps/api/core'
+
+async function selectFolder() {
+  const file = await open({
+    directory: true,
+    multiple: false,
+    title: '选择音乐文件夹',
+  })
+  await invoke('add_music_info_to_db', { invokeMusicDir: file })
+}
+
+async function test() {
+  await invoke('add_music_info_to_db', {
+    invokeMusicDir: 'C:/Users/ceinw/OneDrive/Desktop/Music',
+  })
+}
+</script>
+
+<style scoped>
+.loader {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Montserrat', 'PingFang SC', sans-serif;
+  color: #ffffff;
+}
+
+.text {
+  color: black;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  padding: 14px 48px;
+  border-radius: 50px;
+  background: #f5f5f7;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+.btn:hover {
+  background: #e1e1e3;
+}
+.btn:active {
+  background: #d1d1d3;
+}
+
+.icon {
+  margin-right: 8px;
+  padding: 0;
+}
+</style>

@@ -11,7 +11,7 @@
           />
         </svg>
       </div>
-      <div class="app-name">Player</div>
+      
     </div>
 
     <nav class="nav-group primary">
@@ -24,6 +24,10 @@
         <span class="label">喜爱</span>
       </router-link>
       <router-link :to="{ name: 'playback' }" class="nav-item" active-class="active">
+        <span class="icon">🕘</span>
+        <span class="label">历史</span>
+      </router-link>
+      <router-link :to="{ name: 'loadPage' }" class="nav-item" active-class="active">
         <span class="icon">🕘</span>
         <span class="label">历史</span>
       </router-link>
@@ -41,16 +45,16 @@
   </aside>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+</script>
 
 <style scoped>
 .navigate {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.75), rgba(250, 250, 252, 0.75));
   backdrop-filter: blur(10px);
   height: 100%;
-  width: 240px;
-  min-width: 240px;
-  flex: 0 0 240px; /* fixed column width */
+  width: 180px;
+  flex: 0 0 180px; /* fixed column width */
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -68,11 +72,6 @@
   width: 36px;
   height: 36px;
   flex: 0 0 36px;
-}
-.app-name {
-  font-weight: 700;
-  font-size: 14px;
-  color: #111;
 }
 
 .nav-group {
@@ -143,9 +142,6 @@
 @media (max-width: 520px) {
   .navigate {
     padding: 12px 8px;
-  }
-  .app-name {
-    display: none;
   }
   .nav-item .label {
     display: none;

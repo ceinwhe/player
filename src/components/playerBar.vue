@@ -2,7 +2,7 @@
   <div class="playerBar">
     <!-- 歌曲信息 -->
     <div class="track-info">
-      <img :src="currentTrack.cover" alt="cover" class="cover" :class="{ playing: isPlaying }" />
+      <img :src="currentTrack.cover" alt="cover" class="cover" />
       <div class="text">
         <span class="title">{{ currentTrack.title }}</span>
         <span class="artist">{{ currentTrack.artist }}</span>
@@ -13,7 +13,7 @@
     <div class="controls">
       <button @click="prevTrack" class="btn icon-btn" aria-label="previous">
         <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-          <path d="M6.5 6.5v11l7-5.5-7-5.5zM14.5 6.5v11h1v-11h-1z" fill="currentColor" />
+          <path d="M17.5 6.5v11l-7-5.5 7-5.5zM9.5 6.5v11h-1v-11h1z" fill="currentColor" />
         </svg>
       </button>
 
@@ -32,40 +32,7 @@
 
       <button @click="nextTrack" class="btn icon-btn" aria-label="next">
         <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-          <path d="M17.5 6.5v11l-7-5.5 7-5.5zM9.5 6.5v11h-1v-11h1z" fill="currentColor" />
-        </svg>
-      </button>
-    </div>
-
-    <!-- 进度条与时间 -->
-    <div class="progress">
-      <div class="time left">{{ formatTime(currentTime) }}</div>
-      <input
-        type="range"
-        min="0"
-        :max="duration"
-        v-model="currentTime"
-        @input="onSeek"
-        :style="progressStyle"
-      />
-      <div class="time right">{{ formatTime(duration) }}</div>
-    </div>
-
-    <div class="extras">
-      <button
-        @click="toggleMute"
-        class="btn icon-btn volume-btn"
-        :aria-pressed="isMuted"
-        aria-label="mute"
-      >
-        <svg v-if="!isMuted" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-          <path d="M5 9v6h4l5 4V5L9 9H5z" fill="currentColor" />
-        </svg>
-        <svg v-else viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-          <path
-            d="M16.5 12c0-1.77-.77-3.36-2-4.44v8.88c1.23-1.08 2-2.67 2-4.44zM19 12c0 2.89-1.46 5.44-3.71 6.93l1.43 1.43C19.07 18.69 21 15.53 21 12s-1.93-6.69-4.28-8.36l-1.43 1.43C17.54 6.56 19 9.11 19 12zM4 9v6h4l5 4V5L8 9H4z"
-            fill="currentColor"
-          />
+          <path d="M6.5 6.5v11l7-5.5-7-5.5zM14.5 6.5v11h1v-11h-1z" fill="currentColor" />
         </svg>
       </button>
     </div>
@@ -76,8 +43,6 @@
 import { ref } from 'vue'
 
 const isPlaying = ref(false)
-const currentTime = ref(0)
-const duration = ref(240)
 
 const currentTrack = ref({
   title: '心中的日月',
@@ -90,42 +55,19 @@ const togglePlay = () => {
 }
 const prevTrack = () => {}
 const nextTrack = () => {}
-
-function formatTime(secRef: number | { value: number }) {
-  const s = typeof secRef === 'number' ? secRef : secRef.value
-  const m = Math.floor(s / 60)
-  const sec = Math.floor(s % 60)
-  return `${m}:${sec.toString().padStart(2, '0')}`
-}
-
-function onSeek(e: Event) {
-  const target = e.target as HTMLInputElement
-  currentTime.value = Number(target.value)
-}
-
-import { computed } from 'vue'
-const progressStyle = computed(() => {
-  const pct = Math.max(0, Math.min(100, (currentTime.value / Math.max(1, duration.value)) * 100))
-  return {
-    background: `linear-gradient(90deg, rgba(83,215,161,0.95) 0%, rgba(83,215,161,0.95) ${pct}%, rgba(200,200,200,0.25) ${pct}%, rgba(200,200,200,0.25) 100%)`,
-  }
-})
-
-const isMuted = ref(false)
-function toggleMute() {
-  isMuted.value = !isMuted.value
-}
 </script>
 
 <style scoped>
 .playerBar {
   position: absolute;
-  bottom: 30px;
+  box-sizing: border-box;
+  height: 78px;
   width: 86%;
-  left: calc(7% - 24px);
-  height: 64px; /* slightly taller */
+  left: 7%;
+  bottom: 30px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   margin: 0;
   padding: 10px 18px;
   border-radius: 14px;
@@ -216,72 +158,4 @@ function toggleMute() {
   box-shadow: 0 8px 30px rgba(20, 140, 100, 0.18);
 }
 
-.progress {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: 1;
-  max-width: 420px;
-}
-.progress .time {
-  font-size: 12px;
-  color: #666;
-  width: 40px;
-  text-align: center;
-}
-.progress input[type='range'] {
-  width: 100%;
-  appearance: none;
-  height: 6px;
-  border-radius: 6px;
-  background: linear-gradient(90deg, rgba(83, 215, 161, 0.9) 0%, rgba(200, 200, 200, 0.25) 100%);
-  outline: none;
-  cursor: pointer;
-}
-.progress input[type='range']::-webkit-slider-runnable-track {
-  height: 6px;
-  border-radius: 6px;
-}
-.progress input[type='range']::-webkit-slider-thumb {
-  appearance: none;
-  margin-top: -5px; /* center the thumb */
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: white;
-  border: 3px solid rgba(83, 215, 161, 0.95);
-  box-shadow: 0 6px 18px rgba(83, 215, 161, 0.16);
-  transition: transform 0.12s;
-}
-.progress input[type='range']::-webkit-slider-thumb:hover {
-  transform: scale(1.08);
-}
-
-.extras {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: 12px;
-}
-.volume-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-}
-.volume-btn svg {
-  opacity: 0.95;
-}
-
-.cover.playing {
-  animation: cover-rotate 6s linear infinite;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
-}
-@keyframes cover-rotate {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
 </style>

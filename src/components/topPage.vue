@@ -1,10 +1,7 @@
 <template>
   <header class="top">
-    <div class="left">
-      <div class="logo">Player</div>
-      <div class="search-wrap">
-        <input type="text" class="search" placeholder="搜索歌曲、歌手或专辑" />
-      </div>
+    <div class="search-wrap">
+      <input type="text" class="search" placeholder="搜索歌曲、歌手或专辑" />
     </div>
 
     <div class="buttons">
@@ -42,22 +39,11 @@ function change_window_state() {
   -webkit-app-region: drag;
 }
 
-.left {
-  display: flex;
-  align-items: center;
-  min-width: 80px;
-}
-.logo {
-  font-weight: 600;
-  font-size: 16px;
-  color: #111;
-  margin-right: 40px;
-}
-
 .search-wrap {
-  width: 420px;
+  width: 250px;
   max-width: 70%;
 }
+
 .search {
   width: 100%;
   height: 36px;
@@ -70,8 +56,13 @@ function change_window_state() {
   -webkit-app-region: no-drag;
 }
 
+.buttons {
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
 .icon-btn {
-  display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 36px;

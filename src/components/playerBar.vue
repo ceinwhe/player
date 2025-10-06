@@ -1,11 +1,33 @@
+<script lang="ts" setup>
+import { useMusicInfoStore } from '@/stores/musicInfo.ts'
+import { storeToRefs } from 'pinia'
+import { convertFileSrc } from '@tauri-apps/api/core'
+import { computed, ref } from 'vue'
+
+const musicInfoStore = useMusicInfoStore()
+const musicInfo  = storeToRefs(musicInfoStore)
+const coverSrc = computed(() => {
+  const cover = musicInfo.currentMusic.value?.cover
+  return cover ? convertFileSrc(cover) : '/assets/album.png'
+})
+
+const isPlaying = ref(false)
+
+const togglePlay = () => {
+  isPlaying.value = !isPlaying.value
+}
+const prevTrack = () => {}
+const nextTrack = () => {}
+</script>
+
 <template>
   <div class="playerBar">
     <!-- 歌曲信息 -->
     <div class="track-info">
-      <img :src="currentTrack.cover" alt="cover" class="cover" />
+      <img :src="coverSrc" alt="cover" class="cover" />
       <div class="text">
-        <span class="title">{{ currentTrack.title }}</span>
-        <span class="artist">{{ currentTrack.artist }}</span>
+        <span class="title">{{ musicInfo.currentMusic.value?.title }}</span>
+        <span class="artist">{{ musicInfo.currentMusic.value?.artist }}</span>
       </div>
     </div>
 
@@ -39,32 +61,14 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-import { ref } from 'vue'
-
-const isPlaying = ref(false)
-
-const currentTrack = ref({
-  title: '心中的日月',
-  artist: '王力宏',
-  cover: 'https://placehold.co/100x100',
-})
-
-const togglePlay = () => {
-  isPlaying.value = !isPlaying.value
-}
-const prevTrack = () => {}
-const nextTrack = () => {}
-</script>
-
 <style scoped>
 .playerBar {
-  position: absolute;
+  position: fixed;
   box-sizing: border-box;
   height: 78px;
-  width: 86%;
-  left: 7%;
-  bottom: 30px;
+  left: 220px;
+  right: 40px;
+  bottom: 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -101,7 +105,9 @@ const nextTrack = () => {}
 .text {
   display: flex;
   flex-direction: column;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 .text .title {
   font-weight: 700;
@@ -152,10 +158,9 @@ const nextTrack = () => {}
   background: rgba(0, 0, 0, 0.04);
 }
 
-.controls .play-btn.playing {
+.controls.play-btn.playing {
   background: linear-gradient(180deg, rgba(83, 215, 161, 0.95), rgba(20, 140, 100, 0.95));
   color: white;
   box-shadow: 0 8px 30px rgba(20, 140, 100, 0.18);
 }
-
 </style>

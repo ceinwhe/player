@@ -1,18 +1,19 @@
 <script setup lang="ts">
 import { convertFileSrc, invoke } from '@tauri-apps/api/core'
 import { onMounted, ref } from 'vue'
-import { storeToRefs} from 'pinia'
-import {useMusicInfoStore } from '@/stores/musicInfo.ts'
-import type { Music } from '@/stores/musicInfo.ts'
-
-const musicInfoStore = useMusicInfoStore()
-const { currentMusic, musicList } = storeToRefs(musicInfoStore)
 // 模拟从数据库获取的数据
-
+interface Music {
+  id: number
+  title: string
+  artist: string
+  album: string
+  duration: number
+  cover: string
+  file_path: string
+}
 const songs = ref<Music[]>([])
 onMounted(async () => {
-  songs.value = await invoke<Music[]>('get_music_info', { invokeTable: 'store' })
-  musicList.value=songs.value
+  songs.value = await invoke<Music[]>('get_music_info', { invokeTable: 'favorite' })
 })
 
 // 格式化时间，秒转分秒
@@ -31,17 +32,14 @@ function checkCoverPath(cover: string): string {
 }
 
 // 播放音乐
-async function play(id: number, song: Music) {
-  await invoke('play', { invokeId: id, invokeTable: 'store' })
-  currentMusic.value=song
+async function play(id: number) {
+  await invoke('play', { invokeId: id, invokeTable: 'favorite' })
 }
-///添加到另一个表
-
 </script>
 
 <template>
   <div class="list">
-    <div class="card" v-for="song in songs" :key="song.id" @click="play(song.id, song)">
+    <div class="card" v-for="song in songs" :key="song.id" @click="play(song.id)">
       <img :src="checkCoverPath(song.cover)" alt="cover" class="cover" />
       <div class="info">
         <div class="artist-title">
@@ -123,4 +121,5 @@ async function play(id: number, song: Music) {
   white-space: nowrap;
   margin-right: 12%;
 }
+
 </style>

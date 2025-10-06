@@ -1,3 +1,17 @@
+<script setup lang="ts">
+import { invoke } from '@tauri-apps/api/core'
+
+function close() {
+  invoke('close_window')
+}
+function minimize() {
+  invoke('minimize')
+}
+function toggle() {
+  invoke('toggle')
+}
+</script>
+
 <template>
   <header class="top">
     <div class="search-wrap">
@@ -6,33 +20,21 @@
 
     <div class="buttons">
       <button @click="minimize" class="icon-btn" aria-label="minimize">▁</button>
-      <button @click="change_window_state" class="icon-btn" aria-label="toggle">▢</button>
+      <button @click="toggle" class="icon-btn" aria-label="toggle">▢</button>
       <button @click="close" class="icon-btn" aria-label="close">✕</button>
     </div>
   </header>
 </template>
 
-<script setup lang="ts">
-import { invoke } from '@tauri-apps/api/core'
 
-function close() {
-  invoke('close')
-}
-function minimize() {
-  invoke('minimize')
-}
-function change_window_state() {
-  invoke('change_window_state')
-}
-</script>
 
 <style>
 .top {
-  height: 56px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0;
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
@@ -60,6 +62,7 @@ function change_window_state() {
   display: flex;
   margin: 0;
   padding: 0;
+  -webkit-app-region: no-drag;
 }
 
 .icon-btn {

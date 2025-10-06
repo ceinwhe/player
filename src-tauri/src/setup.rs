@@ -8,7 +8,7 @@ pub async fn setup(app_handle: &AppHandle) -> Result<(), sqlx::Error> {
     let store = StoreBuilder::new(app_handle, "settings.json")
         .build()
         .unwrap();
-    let database_url = "sqlite:./music.db";
+    let database_url = "sqlite://../music.db";
     let pool = Pool::<Sqlite>::connect(database_url).await?;
 
 
@@ -44,7 +44,7 @@ async fn initialize_database(pool: Pool<Sqlite>) -> Result<(), sqlx::Error> {
 
     sqlx::query(
         r#"
-            CREATE TABLE IF NOT EXISTS favorites (
+            CREATE TABLE IF NOT EXISTS favorite (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT NOT NULL,
                 artist TEXT,
@@ -77,6 +77,7 @@ async fn initialize_database(pool: Pool<Sqlite>) -> Result<(), sqlx::Error> {
     Ok(())
 }
 
+///添加 cover 文件夹
 fn initialize_fs(app_handle: &AppHandle) -> Result<(), String> {
     // 获取 %APPDATA% 路径
     let app_data_dir = app_handle

@@ -1,11 +1,11 @@
 pub mod command;
 pub mod database;
-pub mod get_idv3;
+pub mod music_info;
 pub mod setup;
-use crate::setup::setup;
+pub mod music_play;
+
 use crate::command::*;
-
-
+use crate::setup::setup;
 
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -17,9 +17,12 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             add_music_info_to_db,
             check_songs,
-            close,
+            close_window,
             minimize,
-            change_window_state
+            toggle,
+            get_music_info,
+            play,
+            add_to_another_table
         ])
         .setup(|app| {
             if cfg!(debug_assertions) {
@@ -40,5 +43,3 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
-
-

@@ -3,11 +3,14 @@ use lofty::prelude::*;
 use lofty::{picture, read_from_path};
 use sqlx::pool::Pool;
 use sqlx::Sqlite;
+use serde::{Serialize, Deserialize};
 use std::fs;
 use std::path::PathBuf;
+use sqlx::FromRow;
 
-
-pub struct Music {
+#[derive(FromRow, Serialize, Deserialize)]
+pub struct Music{
+    pub id: i32,
     pub artist: String,
     pub title: String,
     pub album: String,
@@ -16,11 +19,28 @@ pub struct Music {
     pub file_path: String,
 }
 
-impl Music {
+
+#[derive(Debug, FromRow, Serialize, Deserialize)]
+pub struct MusicTag {
+    pub artist: String,
+    pub title: String,
+    pub album: String,
+    pub duration: u32,
+    pub cover: String,
+    pub file_path: String,
+}
+
+impl MusicTag {
+
+    ///从音乐文件中提取标签信息
+    ///如果没有标签信息，则使用默认值"Unknown"
+    /// 如果有封面图片，则将其保存到指定目录，并返回保存路径
+    /// 如果没有封面图片，则返回空字符串
+    /// 返回一个MusicTag结构体
     pub fn get(
         music_path: &PathBuf,
         cover_dir: &PathBuf,
-    ) -> Result<Music, Box<dyn std::error::Error>> {
+    ) -> Result<MusicTag, Box<dyn std::error::Error>> {
         let tagged_file = read_from_path(music_path)?;
         let idv3 = tagged_file.primary_tag();
 
@@ -63,7 +83,7 @@ impl Music {
                 };
                 let cover_data = cover.data();
                 // let save_dir=PathBuf::from(save_dir);
-                cover_path = cover_dir.join(format!("{}.{}", artist, ext));
+                cover_path = cover_dir.join(format!("{}-{}.{}", title, artist, ext));
 
                 fs::write(&cover_path, cover_data)?;
             }
@@ -72,7 +92,7 @@ impl Music {
             }
         }
 
-        Ok(Music {
+        Ok(MusicTag {
             artist,
             title,
             album,
@@ -82,25 +102,30 @@ impl Music {
         })
     }
 
-    pub async fn insert(&self, pool: &Pool<Sqlite>) -> Result<(), sqlx::Error> {
-        sqlx::query(
+    ///将音乐信息插入数据库
+    ///如果已经存在，则忽略
+    ///使用INSERT OR IGNORE语句
+    ///返回Result<(), sqlx::Error>
+    pub async fn insert_store(&self, pool: &Pool<Sqlite>) -> Result<(), sqlx::Error> {
+        sqlx::query!(
             r#"
-            INSERT INTO store (artist, title, album, duration, cover, file_path)
+            INSERT OR IGNORE INTO store (artist, title, album, duration, cover, file_path)
             VALUES (?, ?, ?, ?, ?, ?)
             "#,
-
+            self.artist,
+            self.title,
+            self.album,
+            self.duration,
+            self.cover,
+            self.file_path
         )
-            .bind(&self.artist)
-            .bind(&self.title)
-            .bind(&self.album)
-            .bind(self.duration as i64)
-            .bind(&self.cover)
-            .bind(&self.file_path)
-            .execute(pool)
-            .await?;
+        .execute(pool)
+        .await?;
+
         Ok(())
     }
 }
+
 ///遍历得到音乐文件路径
 pub fn get_music_path(dir_path: &str) -> Vec<PathBuf> {
     let mut files = Vec::new();

@@ -1,28 +1,14 @@
-<template>
-  <main class="main">
-    <nav-page></nav-page>
-    <div class="content">
-      <top-page/>
-      <div class="view">
-        <router-view class="router-view" />
-        <playerBar v-if="showPlayBar"/>
-      </div>
-    </div>
-  </main>
-</template>
-
 <script setup lang="ts">
 import NavPage from '@/components/navPage.vue'
 import TopPage from '@/components/topPage.vue'
 import PlayerBar from '@/components/playerBar.vue'
+import ContextMenu from '@/components/ContextMenu.vue'
 import { computed, onMounted } from 'vue'
 import { invoke } from '@tauri-apps/api/core'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const showPlayBar = computed(()=>(
-  router.currentRoute.value.path != '/loadPage'
-))
+const showPlayBar = computed(() => router.currentRoute.value.path != '/loadPage')
 
 onMounted(async () => {
   if (await invoke('check_songs')) {
@@ -32,6 +18,20 @@ onMounted(async () => {
   }
 })
 </script>
+
+<template>
+  <div class="app">
+    <main class="main">
+      <nav-page />
+      <div class="content">
+        <top-page class="top" />
+        <router-view class="view" />
+      </div>
+    </main>
+    <player-bar v-if="showPlayBar" />
+    <ContextMenu />
+  </div>
+</template>
 
 <style scoped>
 .main {
@@ -54,14 +54,7 @@ onMounted(async () => {
   padding: 0;
   margin: 0;
 }
-
 .view {
-  position: relative;
   flex: 1;
 }
-
-.router-view {
-  display: flex;
-}
 </style>
-

@@ -21,7 +21,15 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; img-src 'self'; asset: https://asset.localhost",
+      "assetProtocol": {
+        "enable": true,
+        "scope": [
+          "$APPDATA/**",
+          "$DESKTOP/**",
+          "$DOWNLOAD/*"
+        ]
+      }
     }
   },
   "bundle": {
@@ -33,6 +41,10 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
+    ],
+    "resources": [
+
     ]
   }
+
 }

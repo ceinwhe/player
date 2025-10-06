@@ -1,3 +1,6 @@
+<script setup lang="ts">
+</script>
+
 <template>
   <aside class="navigate">
     <div class="brand">
@@ -27,10 +30,7 @@
         <span class="icon">🕘</span>
         <span class="label">历史</span>
       </router-link>
-      <router-link :to="{ name: 'loadPage' }" class="nav-item" active-class="active">
-        <span class="icon">🕘</span>
-        <span class="label">历史</span>
-      </router-link>
+
     </nav>
 
     <div class="nav-group playlists">
@@ -44,9 +44,6 @@
     </div>
   </aside>
 </template>
-
-<script setup lang="ts">
-</script>
 
 <style scoped>
 .navigate {

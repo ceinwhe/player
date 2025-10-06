@@ -9,7 +9,6 @@
       </svg>
       选择文件夹
     </button>
-    <button @click="test">test</button>
   </div>
 </template>
 
@@ -24,12 +23,6 @@ async function selectFolder() {
     title: '选择音乐文件夹',
   })
   await invoke('add_music_info_to_db', { invokeMusicDir: file })
-}
-
-async function test() {
-  await invoke('add_music_info_to_db', {
-    invokeMusicDir: 'C:/Users/ceinw/OneDrive/Desktop/Music',
-  })
 }
 </script>
 

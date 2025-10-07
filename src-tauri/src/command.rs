@@ -1,8 +1,8 @@
 use tauri::{ AppHandle};
 use tauri_plugin_store::StoreBuilder;
-use crate::{database, music_play};
-use crate::music_play::{PLAYER};
+use crate::{database};
 use crate::music_info::Music;
+use crate::music_play::PLAYER;
 
 ///添加音乐信息到数据库
 #[tauri::command]
@@ -32,15 +32,16 @@ pub async fn check_songs(app_handle: AppHandle)-> bool {
     }
 }
 
-
-
+///播放音乐的命令
 #[tauri::command]
 pub async fn play(invoke_id:i32,invoke_table:String){
     let database=database::DataBase::default().await.expect("database初始化失败");
-    music_play::play(invoke_id,invoke_table,database).await;
-    // PLAYER.play(invoke_id,invoke_table,database).await.expect("播放失败");
+    PLAYER.play(invoke_id,invoke_table,database).await.expect("播放失败");
 }
-
+#[tauri::command]
+pub fn toggle_play(){
+    PLAYER.toggle();
+}
 
 ///获取音乐信息结构体
 #[tauri::command]
@@ -67,7 +68,7 @@ pub fn minimize(window: tauri::Window) {
     window.minimize().unwrap();
 }
 #[tauri::command]
-pub fn toggle(window: tauri::Window) {
+pub fn toggle_window(window: tauri::Window) {
     if window.is_maximized().unwrap() {
         window.unmaximize().unwrap();
     } else {

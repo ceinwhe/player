@@ -1,23 +1,48 @@
 <script lang="ts" setup>
 import { useMusicInfoStore } from '@/stores/musicInfo.ts'
-import { storeToRefs } from 'pinia'
-import { convertFileSrc } from '@tauri-apps/api/core'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
+import { convertFileSrc, invoke } from '@tauri-apps/api/core'
+
 
 const musicInfoStore = useMusicInfoStore()
-const musicInfo  = storeToRefs(musicInfoStore)
 const coverSrc = computed(() => {
-  const cover = musicInfo.currentMusic.value?.cover
-  return cover ? convertFileSrc(cover) : '/assets/album.png'
+  if (musicInfoStore.playingMusic?.cover) {
+    return convertFileSrc(musicInfoStore.playingMusic.cover)
+  }else {
+    return '/assets/album.png'
+  }
 })
-
-const isPlaying = ref(false)
-
-const togglePlay = () => {
+const title = computed(() => {
+  if (musicInfoStore.playingMusic?.title){
+    return musicInfoStore.playingMusic.title
+  }else {
+    return '未知歌曲'
+  }
+})
+const artist = computed(() => {
+  if (musicInfoStore.playingMusic?.artist){
+    return musicInfoStore.playingMusic.artist
+  }else {
+    return '未知艺术家'
+  }
+})
+const isPlaying = computed({
+  get: () => musicInfoStore.isPlaying,
+  set: (v: boolean) => {
+    // 如果 isPlaying 是 getter，请改为调用 store 的 action 切换状态
+    musicInfoStore.isPlaying = v
+  },
+})
+async function togglePlay() {
   isPlaying.value = !isPlaying.value
+  await invoke('toggle_play')
 }
-const prevTrack = () => {}
-const nextTrack = () => {}
+async function prevTrack() {
+  // 实现上一首功能
+}
+async function nextTrack() {
+  // 实现下一首功能
+}
 </script>
 
 <template>
@@ -26,21 +51,23 @@ const nextTrack = () => {}
     <div class="track-info">
       <img :src="coverSrc" alt="cover" class="cover" />
       <div class="text">
-        <span class="title">{{ musicInfo.currentMusic.value?.title }}</span>
-        <span class="artist">{{ musicInfo.currentMusic.value?.artist }}</span>
+        <span class="title">{{ title }}</span>
+        <span class="artist">{{ artist }}</span>
       </div>
     </div>
 
     <!-- 控制区域 -->
     <div class="controls">
+      <!-- 上一首按钮 -->
       <button @click="prevTrack" class="btn icon-btn" aria-label="previous">
         <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
           <path d="M17.5 6.5v11l-7-5.5 7-5.5zM9.5 6.5v11h-1v-11h1z" fill="currentColor" />
         </svg>
       </button>
 
+      <!-- 播放/暂停按钮 -->
       <button
-        @click="togglePlay"
+        @click="togglePlay()"
         :class="['btn', 'play-btn', { playing: isPlaying }]"
         aria-label="play-pause"
       >
@@ -52,6 +79,7 @@ const nextTrack = () => {}
         </svg>
       </button>
 
+      <!-- 下一首按钮 -->
       <button @click="nextTrack" class="btn icon-btn" aria-label="next">
         <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
           <path d="M6.5 6.5v11l7-5.5-7-5.5zM14.5 6.5v11h1v-11h-1z" fill="currentColor" />

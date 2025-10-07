@@ -8,7 +8,7 @@ function minimize() {
   invoke('minimize')
 }
 function toggle() {
-  invoke('toggle')
+  invoke('toggle_window')
 }
 </script>
 

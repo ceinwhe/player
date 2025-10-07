@@ -1,18 +1,17 @@
 <script setup lang="ts">
 import { convertFileSrc, invoke } from '@tauri-apps/api/core'
 import { onMounted, ref } from 'vue'
-import { storeToRefs} from 'pinia'
-import {useMusicInfoStore } from '@/stores/musicInfo.ts'
+import { useMusicInfoStore } from '@/stores/musicInfo.ts'
 import type { Music } from '@/stores/musicInfo.ts'
 
+const tableName = 'store'
 const musicInfoStore = useMusicInfoStore()
-const { currentMusic, musicList } = storeToRefs(musicInfoStore)
-// 模拟从数据库获取的数据
 
+// 模拟从数据库获取的数据
 const songs = ref<Music[]>([])
 onMounted(async () => {
-  songs.value = await invoke<Music[]>('get_music_info', { invokeTable: 'store' })
-  musicList.value=songs.value
+  songs.value = await invoke<Music[]>('get_music_info', { invokeTable: tableName })
+  musicInfoStore.musicList = songs.value
 })
 
 // 格式化时间，秒转分秒
@@ -30,18 +29,17 @@ function checkCoverPath(cover: string): string {
   }
 }
 
-// 播放音乐
-async function play(id: number, song: Music) {
-  await invoke('play', { invokeId: id, invokeTable: 'store' })
-  currentMusic.value=song
-}
-///添加到另一个表
-
 </script>
 
 <template>
   <div class="list">
-    <div class="card" v-for="song in songs" :key="song.id" @click="play(song.id, song)">
+    <div
+      class="card"
+      v-for="song in songs"
+      :key="song.id"
+      @click="musicInfoStore.play( song, tableName)"
+      @contextmenu="musicInfoStore.openContextMenu($event, song, tableName)"
+    >
       <img :src="checkCoverPath(song.cover)" alt="cover" class="cover" />
       <div class="info">
         <div class="artist-title">

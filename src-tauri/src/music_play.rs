@@ -94,5 +94,8 @@ pub async fn play(id:i32, table:String, database:DataBase){
         });
     };
     PLAYER.play_with_callback(callback);
+}
 
+pub fn toggle(){
+    PLAYER.toggle();
 }

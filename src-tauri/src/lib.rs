@@ -19,9 +19,10 @@ pub fn run() {
             check_songs,
             close_window,
             minimize,
-            toggle,
+            toggle_window,
             get_music_info,
             play,
+            toggle_play,
             add_to_another_table
         ])
         .setup(|app| {
